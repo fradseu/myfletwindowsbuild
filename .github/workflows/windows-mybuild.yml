@@ -12,6 +12,10 @@ env:
   PYTHON_VERSION: 3.12.2
   FLUTTER_VERSION: 3.24.0
 
+permissions:
+  contents: write  # Permite a criação de releases
+  id-token: write  # Permite acesso ao GitHub ID token
+
 jobs:
   build:
     runs-on: windows-latest
@@ -66,12 +70,12 @@ jobs:
           draft: false
           prerelease: false
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}  # Usando o token correto
   
       - name: Upload Windows Artifact to Release
         uses: actions/upload-release-asset@v1
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}  # Ação correta para passar o URL de upload
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: build/windows/*
           asset_name: windows-build-artifact.zip
           asset_content_type: application/zip
