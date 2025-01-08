@@ -1,34 +1,28 @@
 import flet as ft
 
 def main(page: ft.Page):
-    # Define o estado inicial do número
-    number = ft.Ref[ft.Text]()
-    
-    # Função para adicionar 1 ao número
-    def add_number(e):
-        current_value = int(number.current.value)
-        number.current.value = str(current_value + 1)
+    page.title = "Flet counter example"
+    page.vertical_alignment = ft.MainAxisAlignment.CENTER
+
+    txt_number = ft.TextField(value="0", text_align=ft.TextAlign.RIGHT, width=100)
+
+    def minus_click(e):
+        txt_number.value = str(int(txt_number.value) - 1)
         page.update()
 
-    # Configuração inicial do número
-    number_label = ft.Text("0", ref=number, size=20, color="blue")
+    def plus_click(e):
+        txt_number.value = str(int(txt_number.value) + 1)
+        page.update()
 
-    # Botão para adicionar o número
-    add_button = ft.ElevatedButton("Adicionar 1", on_click=add_number)
-
-    # Adicionando componentes à página
     page.add(
-        ft.Column(
+        ft.Row(
             [
-                ft.Text("Clique para adicionar ao número:", size=18),
-                number_label,
-                add_button
+                ft.IconButton(ft.Icons.REMOVE, on_click=minus_click),
+                txt_number,
+                ft.IconButton(ft.Icons.ADD, on_click=plus_click),
             ],
             alignment=ft.MainAxisAlignment.CENTER,
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         )
     )
 
-# Executar a aplicação
-if __name__ == "__main__":
-    ft.app(target=main)
+ft.app(main)
