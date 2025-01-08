@@ -44,10 +44,13 @@ jobs:
         flutter config --no-analytics
         flet build windows --verbose --no-rich-output --build-number=$env:BUILD_NUMBER --build-version=$env:BUILD_VERSION
 
-    - name: Create build/windows directory if it doesn't exist
+    - name: Verify build output and list contents of build/windows
       run: |
-        if (-not (Test-Path -Path "build/windows")) {
-          New-Item -ItemType Directory -Force -Path "build/windows"
+        if (Test-Path "build/windows") {
+          Write-Host "Directory exists, listing contents:"
+          Get-ChildItem -Path "build/windows"
+        } else {
+          Write-Host "Directory does not exist"
         }
 
     - name: Upload Windows Artifact
