@@ -48,28 +48,30 @@ jobs:
         if-no-files-found: error
         overwrite: false
 
+
   release:
     runs-on: ubuntu-latest
     needs: build
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Create GitHub Release
-      uses: actions/create-release@v1
-      with:
-        tag_name: v${{ env.BUILD_VERSION }}
-        release_name: Release v${{ env.BUILD_VERSION }}
-        body: "Release notes for version v${{ env.BUILD_VERSION }}"
-        draft: false
-        prerelease: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-
-    - name: Upload Windows Artifact to Release
-      uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: build/windows/*
-        asset_name: windows-build-artifact.zip
-        asset_content_type: application/zip
+      - name: Checkout code
+        uses: actions/checkout@v4
+  
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: v${{ env.BUILD_VERSION }}
+          release_name: Release v${{ env.BUILD_VERSION }}
+          body: "Release notes for version v${{ env.BUILD_VERSION }}"
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
+      - name: Upload Windows Artifact to Release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}  # Ação correta para passar o URL de upload
+          asset_path: build/windows/*
+          asset_name: windows-build-artifact.zip
+          asset_content_type: application/zip
