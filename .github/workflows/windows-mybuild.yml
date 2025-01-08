@@ -44,14 +44,11 @@ jobs:
         flutter config --no-analytics
         flet build windows --verbose --no-rich-output --build-number=$env:BUILD_NUMBER --build-version=$env:BUILD_VERSION
 
-    - name: Verify or Create Build Output
+    - name: Create build/windows directory if it doesn't exist
       run: |
-        if [ ! -d "build/windows" ]; then
-          echo "Build output does not exist, creating it."
-          mkdir -p build/windows
-        else
-          echo "Build output exists"
-        fi
+        if (-not (Test-Path -Path "build/windows")) {
+          New-Item -ItemType Directory -Force -Path "build/windows"
+        }
 
     - name: Upload Windows Artifact
       uses: actions/upload-artifact@v4.3.4
@@ -60,7 +57,6 @@ jobs:
         path: build/windows
         if-no-files-found: error
         overwrite: false
-
 
   release:
     runs-on: ubuntu-latest
