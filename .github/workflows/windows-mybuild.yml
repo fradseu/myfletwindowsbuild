@@ -59,18 +59,31 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-  
+
+      - name: Check if tag already exists
+        id: check_tag
+        run: |
+          git fetch --tags
+          TAG_EXISTS=$(git tag -l "v${{ env.BUILD_VERSION }}")
+          echo "Tag exists: $TAG_EXISTS"
+          if [ -n "$TAG_EXISTS" ]; then
+            echo "Tag v${{ env.BUILD_VERSION }} already exists. Creating a new tag."
+            echo "NEW_TAG=v${{ env.BUILD_VERSION }}-${{ github.run_number }}" >> $GITHUB_ENV
+          else
+            echo "NEW_TAG=v${{ env.BUILD_VERSION }}" >> $GITHUB_ENV
+          fi
+
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
         with:
-          tag_name: v${{ env.BUILD_VERSION }}
-          release_name: Release v${{ env.BUILD_VERSION }}
-          body: "Release notes for version v${{ env.BUILD_VERSION }}"
+          tag_name: ${{ env.NEW_TAG }}
+          release_name: Release ${{ env.NEW_TAG }}
+          body: "Release notes for version ${{ env.NEW_TAG }}"
           draft: false
           prerelease: false
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}  # Usando o token correto
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
   
       - name: Upload Windows Artifact to Release
         uses: actions/upload-release-asset@v1
