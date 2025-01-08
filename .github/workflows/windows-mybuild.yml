@@ -55,12 +55,18 @@ jobs:
         }
 
     - name: Upload Windows Artifact
+      id: upload_artifact
       uses: actions/upload-artifact@v4.3.4
       with:
         name: windows-build-artifact
         path: build/windows/*   # Ajuste o caminho aqui após a verificação
         if-no-files-found: error
         overwrite: false
+
+    - name: Set artifact URL
+      id: set_artifact_url
+      run: |
+        echo "artifact_url=https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts/$(echo ${{ steps.upload_artifact.outputs.artifact_id }})" >> $GITHUB_ENV
 
   # Job de Release para GitHub
   release:
@@ -89,10 +95,11 @@ jobs:
         with:
           tag_name: ${{ env.NEW_TAG }}
           release_name: Release ${{ env.NEW_TAG }}
-          body: "Release notes for version ${{ env.NEW_TAG }}"
+          body: |
+            Release notes for version ${{ env.NEW_TAG }}
+            
+            Download the build artifact here: ${{ env.artifact_url }}
           draft: false
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-
-
